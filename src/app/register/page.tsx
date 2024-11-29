@@ -1,4 +1,5 @@
 'use client';
+import { ApiService } from '@/services/api';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
@@ -22,46 +23,15 @@ export default function RegisterPage() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log('Form data:', formData);
     try {
-      const response = await fetch('http://localhost:3000/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'An unknown error occurred');
-      }
-
-      const data = await response.json();
-
-      if(data.statusCode !== 200) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Registration failed',
-          text: data.message,
-        });
-        return;
-      }
-
+      await ApiService.register(formData);
       Swal.fire({
         icon: 'success',
         title: 'Registration successful',
-        text: data.message,
+        text: 'You have successfully registered!',
       });
-
       router.push('/login');
-    } catch (error: any) {
-      console.error('Registration error:', error.message);
-      Swal.fire({
-        icon: 'error',
-        title: 'Registration failed',
-        text: error.message,
-      });
+    } catch (error) {
     }
   };
 

@@ -1,4 +1,5 @@
 'use client'; // Necesario para manejar eventos en el cliente
+import { ApiService } from '@/services/api';
 import { useRouter } from 'next/navigation'; // Importar useRouter
 import { split } from 'postcss/lib/list';
 import React from 'react';
@@ -9,53 +10,18 @@ export default function LoginPage() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     const email = (event.target as any).email.value;
     const password = (event.target as any).password.value;
-
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      console.log('Login response:', response);
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'An unknown error occurred');
-      }
-
-      const data = await response.json();
-      console.log('Logged in:', data);
-      if (data.statusCode !== 200) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Login failed',
-          text: data.message,
-        });
-        return;
-      }
-      console.log('Data:', data.data.user);
-      localStorage.setItem('user', JSON.stringify(data.data.user)); // Ajusta según cómo se llame el atributo del nombre del usuario en tu API.
-
-      // Mostrar SweetAlert2 para éxito
+      const data = await ApiService.login({ email, password });
+      localStorage.setItem('user', JSON.stringify(data.data.user));
       Swal.fire({
         icon: 'success',
-        title: 'Login successful',
-        text: data.message,
+        title: data.message,
+        text: 'You have successfully logged in!',
       });
-      router.push('/dashboard'); // Usa el router de Next.js para redirigir
-    } catch (error: any) {
-      console.log('Login error:', error.message);
-
-      // Mostrar SweetAlert2 para errores
-      Swal.fire({
-        icon: 'error',
-        title: 'Login failed',
-        text: error.message,
-      });
+      router.push('/dashboard');
+    } catch (error) {
     }
   };
 

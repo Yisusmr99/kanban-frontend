@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get('token')?.value;
+  console.log('Token:', token);
 
   const publicRoutes = ['/login', '/register', '/api/public'];
   const isPublicRoute = publicRoutes.some((route) => req.nextUrl.pathname.startsWith(route));
@@ -17,7 +18,7 @@ export function middleware(req: NextRequest) {
   }
 
   try {
-    jwt.verify(token, process.env.JWT_SECRET || 'default_secret');
+    jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
     return NextResponse.next();
   } catch (error) {
     return NextResponse.redirect(new URL('/login', req.url));
