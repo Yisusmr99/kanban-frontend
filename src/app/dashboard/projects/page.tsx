@@ -104,10 +104,10 @@ export default function ProjectsPage() {
                     </>
                   )}
                   <button
-                    onClick={() => handleViewBoard(project.id)}
-                    className="rounded-md bg-green-600 px-3 py-1 text-sm font-medium text-white hover:bg-green-500"
+                    onClick={() => router.push(`/dashboard/board/${project.id}`)}
+                    className="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-500"
                   >
-                    View Board
+                    Go to Board
                   </button>
                 </div>
               </div>
