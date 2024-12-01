@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       const parsedUser = JSON.parse(user);
       setUserName(parsedUser.username || ''); // Seteamos el nombre del usuario
     } catch (error) {
-      console.error('Error parsing user:', error);
+      console.log('Error parsing user:', error);
       router.push('/login'); // Redirige al login si el JSON está corrupto
     }
   }, [router]);

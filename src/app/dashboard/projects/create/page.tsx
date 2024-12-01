@@ -1,5 +1,6 @@
 "use client";
 import ProjectForm from '@/components/ProjectForm';
+import { ApiService } from '@/services/api';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 
@@ -7,34 +8,22 @@ export default function CreateProjectPage() {
   const router = useRouter();
   const handleCreate = async (data: { name: string; description: string; users: number[] }) => {
     try {
-      const response = await fetch('http://localhost:3000/projects', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create project');
-      }
-      const data_response = await response.json();
-      console.log('proyecto creado:', data_response);
-      if (data_response.statusCode !== 200) {
+      const response  = await ApiService.createProject(data);
+      if (response.statusCode !== 200) {
         Swal.fire({
           icon: 'success',
           title: 'Project created successfully!',
-          text: data_response.message,
+          text: response.message,
         });
         router.push('/dashboard/projects')
       }else{
         Swal.fire({
           icon: 'error',
           title: 'Project creation failed',
-          text: data_response.message,
+          text: response.message,
         });
       }
     } catch (error) {
-      console.error('Error creating project:', error);
       Swal.fire({
         icon: 'error',
         title: 'Project creation failed',

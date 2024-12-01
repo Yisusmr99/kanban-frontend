@@ -3,12 +3,22 @@ import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Column } from './Column';
 import { SortableItem } from './SortableItem';
-import Swal from 'sweetalert2';
+import AddTaskModal from './AddTaskModal'; // Importamos el modal para agregar tareas
+import TaskDetailsModal from './TaskDetailsModal'; // Importamos el modal para detalles de tarea
+import EditTaskModal from './EditTaskModal';
+import { ApiService } from '@/services/api';
 
 type Task = {
   id: string;
   title: string;
   description?: string;
+  created_at: string;
+  responsible: {
+    id: number;
+    username: string;
+    full_name: string;
+  }
+  project_id: number;
 };
 
 type Column = {
@@ -17,7 +27,12 @@ type Column = {
   tasks: Task[];
 };
 
-const KanbanBoard = ({ projectId }: { projectId: number }) => {
+type Collaborator = {
+  id: number;
+  username: string;
+};
+
+const KanbanBoard = ({ projectId, collaborators }: { projectId: number; collaborators: Collaborator[] }) => {
   const [columns, setColumns] = useState<Column[]>([
     { id: '1', name: 'To Do', tasks: [] },
     { id: '2', name: 'In Progress', tasks: [] },
@@ -26,26 +41,22 @@ const KanbanBoard = ({ projectId }: { projectId: number }) => {
 
   const [loading, setLoading] = useState(true);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null); // Para el modal de detalles
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [selectedColumnId, setSelectedColumnId] = useState<string | null>(null); // Columna donde se agregará la tarea
+  const [showEditTaskModal, setShowEditTaskModal] = useState(false); // Estado para mostrar el modal de editar tarea
+  const [selectedTaskEdit, setSelectedTaskEdit] = useState<Task | null>(null); // Tarea seleccionada para editar
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/cards/project/${projectId}`);
-        const data = await response.json();
-
-        if (response.ok) {
-          const tasks = data.data;
-
-          const updatedColumns = columns.map((col) => ({
-            ...col,
-            tasks: tasks.filter((task: any) => `${task.column?.id}` === col.id),
-          }));
-          console.log(updatedColumns, 'las columnas');
-
-          setColumns(updatedColumns);
-        } else {
-          console.log('Error fetching tasks:', data.message);
-        }
+        const response = await ApiService.getTasks(projectId);
+        const tasks = response.data;
+        const updatedColumns = columns.map((col) => ({
+          ...col,
+          tasks: tasks.filter((task: any) => `${task.column?.id}` === col.id),
+        }));
+        setColumns(updatedColumns);
       } catch (error) {
         console.log('Error fetching tasks:', error);
       } finally {
@@ -56,109 +67,72 @@ const KanbanBoard = ({ projectId }: { projectId: number }) => {
     fetchTasks();
   }, [projectId]);
 
-  const handleAddTask = async () => {
-    const { value: formValues } = await Swal.fire({
-      title: 'Create New Task',
-      html: `
-        <input id="swal-title" class="swal2-input" placeholder="Task Title" required>
-        <textarea id="swal-description" class="swal2-textarea" placeholder="Task Description"></textarea>
-        <input id="swal-responsible" class="swal2-input" placeholder="Responsible User ID (optional)">
-      `,
-      focusConfirm: false,
-      showCancelButton: true,
-      preConfirm: () => {
-        const title = (document.getElementById('swal-title') as HTMLInputElement).value.trim();
-        const description = (document.getElementById('swal-description') as HTMLTextAreaElement).value.trim();
-        const responsible = (document.getElementById('swal-responsible') as HTMLInputElement).value.trim();
+  const handleAddTask = (columnId: string) => {
+    setSelectedColumnId(columnId);
+    setShowAddTaskModal(true); // Mostrar el modal de agregar tarea
+  };
 
-        if (!title) {
-          Swal.showValidationMessage('Task title is required');
-          return;
-        }
+  const handleTaskAdded = (newTask: any) => {
+    setColumns((prevColumns) =>
+      prevColumns.map((col) =>
+        col.id === selectedColumnId ? { ...col, tasks: [...col.tasks, newTask] } : col
+      )
+    );
+    setShowAddTaskModal(false); // Ocultar el modal después de agregar la tarea
+  };
 
-        return {
-          title,
-          description,
-          responsible: responsible ? parseInt(responsible, 10) : null,
-        };
-      },
-    });
+  const handleEditTask = (columnId: string) => {
+    setSelectedColumnId(columnId);
+    setShowEditTaskModal(true); // Mostrar el modal de editar tarea
+  };
 
-    if (formValues) {
-      try {
-        const response = await fetch('http://localhost:3000/cards', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            columnId: 1, // Assigns to the "To Do" column
-            projectId,
-            title: formValues.title,
-            description: formValues.description || undefined,
-            responsibleId: formValues.responsible || undefined,
-          }),
-        });
-
-        if (response.ok) {
-          Swal.fire('Success', 'Task created successfully!', 'success');
-
-          const data = await response.json();
-          const newTask = data.data;
-
-          setColumns((prevColumns) =>
-            prevColumns.map((col) =>
-              col.id === '1'
-                ? { ...col, tasks: [...col.tasks, newTask] }
-                : col
-            )
+  const handleTaskUpdated = (updatedTask: Task) => {
+    setColumns((prevColumns) =>
+      prevColumns.map((column) => {
+        // Verifica si la columna contiene la tarea actualizada
+        if (column.tasks.some((task) => task.id === updatedTask.id)) {
+          // Actualiza la tarea dentro de la columna
+          const updatedTasks = column.tasks.map((task) =>
+            task.id === updatedTask.id ? updatedTask : task
           );
-        } else {
-          const data = await response.json();
-          Swal.fire('Error', data.message || 'Failed to create task', 'error');
+          return { ...column, tasks: updatedTasks };
         }
-      } catch (error) {
-        Swal.fire('Error', 'An error occurred while creating the task', 'error');
-      }
-    }
+        return column;
+      })
+    );
+    setShowEditTaskModal(false); // Cierra el modal después de actualizar
   };
 
   const handleDragEnd = async ({ active, over }: { active: any; over: any }) => {
     if (!over || active.id === over.id) {
       return;
     }
-  
+
     // Encontrar las columnas de origen y destino
     const sourceColumn = columns.find((col) =>
       col.tasks.some((task) => task.id === active.id)
     );
     const targetColumn = columns.find((col) => col.id === over.id);
-  
+
     if (!sourceColumn || !targetColumn) {
       return;
     }
-  
+
     // Encontrar la tarea activa
     const activeTask = sourceColumn.tasks.find((task) => task.id === active.id);
-  
+
     if (!activeTask) {
       return;
     }
-  
+
     // Actualizar las tareas en las columnas de origen y destino
     const updatedSourceTasks = sourceColumn.tasks.filter((task) => task.id !== active.id);
     const updatedTargetTasks = [...targetColumn.tasks, activeTask];
-  
+
     try {
       // Actualizar en el backend
-      await fetch(`http://localhost:3000/cards/${active.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          columnId: parseInt(targetColumn.id), // Asegúrate de que `id` sea único y válido
-        }),
-      });
-  
+      const data = JSON.stringify({ columnId: parseInt(targetColumn.id) });
+      await ApiService.updateStateTask(parseInt(active.id), data);
       // Actualizar el estado local después de una respuesta exitosa
       setColumns((prevColumns) =>
         prevColumns.map((col) => {
@@ -172,10 +146,19 @@ const KanbanBoard = ({ projectId }: { projectId: number }) => {
         })
       );
     } catch (error) {
-      console.error('Error updating task:', error);
+      console.log('Error updating task:', error);
     }
   };
   
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
 
   if (loading) {
     return <p>Loading...</p>;
@@ -195,15 +178,15 @@ const KanbanBoard = ({ projectId }: { projectId: number }) => {
         handleDragEnd(event);
       }}
     >
-      <div className="grid grid-cols-3 gap-4 p-6 ">
+      <div className="grid grid-cols-3 gap-4 p-6">
         {columns.map((column) => (
           <Column key={column.id} id={column.id}>
-            <div className="bg-gray-100 p-4 rounded-lg shadow-md h-[45rem] flex flex-col">
+            <div className="bg-gray-100 p-4 rounded-lg shadow-md h-[40rem] flex flex-col">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">{column.name}</h2>
                 {column.id === '1' && (
                   <button
-                    onClick={handleAddTask}
+                    onClick={() => handleAddTask(column.id)}
                     className="px-3 py-1 bg-blue-500 text-white text-sm rounded-md shadow hover:bg-blue-400"
                   >
                     + Add Task
@@ -215,9 +198,38 @@ const KanbanBoard = ({ projectId }: { projectId: number }) => {
                 strategy={verticalListSortingStrategy}
               >
                 {column.tasks.map((task) => (
-                  <SortableItem key={task.id} id={task.id}>
-                    {task.title}
-                  </SortableItem>
+                  <div key={task.id} className="relative">
+                    <SortableItem id={task.id}>
+                      <div className="font-medium text-gray-800">{task.title}</div>
+                      <div className="text-sm text-gray-500">
+                        Created: {formatDate(task.created_at)}
+                      </div>
+                      {task.responsible && (
+                        <div className="text-sm text-gray-500">
+                          Assigned to: <span className="font-medium">{task.responsible.full_name}</span>
+                        </div>
+                      )}
+                    </SortableItem>
+                    <div className="absolute top-2 right-2">
+                      <button
+                        onClick={() => setSelectedTask(task)}
+                        className="px-2 py-1 bg-blue-500 text-white text-xs rounded shadow hover:bg-blue-400"
+                      >
+                        Details
+                      </button>
+                    </div>
+                    <div className="absolute bottom-2 right-2">
+                      <button
+                        onClick={() => {
+                          handleEditTask(column.id);
+                          setSelectedTaskEdit(task);
+                        }}
+                        className="px-2 py-1 bg-green-500 text-white text-xs rounded shadow hover:bg-green-400"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </SortableContext>
             </div>
@@ -227,6 +239,28 @@ const KanbanBoard = ({ projectId }: { projectId: number }) => {
       <DragOverlay>
         {activeTask && <div className="p-3 bg-white rounded-md shadow">{activeTask.title}</div>}
       </DragOverlay>
+      {showAddTaskModal && selectedColumnId && (
+        <AddTaskModal
+          projectId={projectId}
+          columnId={selectedColumnId}
+          collaborators={collaborators}
+          onClose={() => setShowAddTaskModal(false)}
+          onTaskAdded={handleTaskAdded}
+        />
+      )}
+      {selectedTask &&(
+        <TaskDetailsModal task={selectedTask} onClose={() => setSelectedTask(null)} />
+      )}
+      {
+        showEditTaskModal && selectedColumnId && selectedTaskEdit && (
+          <EditTaskModal
+            onClose={() => setShowEditTaskModal(false)}
+            onTaskUpdated={handleTaskUpdated}
+            task={selectedTaskEdit}
+            collaborators={collaborators}
+          />
+        )
+      }
     </DndContext>
   );
 };

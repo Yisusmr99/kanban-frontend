@@ -3,6 +3,7 @@ import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ProjectForm from '@/components/ProjectForm';
 import Swal from 'sweetalert2';
+import { ApiService } from '@/services/api';
 
 export default function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params); // Desempaqueta la promesa de `params`
@@ -13,23 +14,14 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/projects/${unwrappedParams.id}`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch project');
-        }
-
-        const data = await response.json();
+        const response = await ApiService.getProject(parseInt(unwrappedParams.id));
         setProject({
-          name: data.name,
-          description: data.description,
-          users: data.collaborators.map((collaborator: any) => collaborator.id),
+          name: response.name,
+          description: response.description,
+          users: response.collaborators.map((collaborator: any) => collaborator.id),
         });
       } catch (error) {
-        console.error('Error fetching project:', error);
+        console.log('Error fetching project:', error);
       }
     };
 
@@ -48,35 +40,24 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
         return;
       }
 
-      const response = await fetch(`http://localhost:3000/projects/${unwrappedParams.id}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
+      const response = await ApiService.updateProject(parseInt(unwrappedParams.id), data);
 
-      if (!response.ok) {
-        throw new Error('Failed to update project');
-      }
-
-      const data_response = await response.json();
-      console.log('proyecto actualizado:', data_response);
-      if (data_response.statusCode !== 200) {
+      if (response.statusCode !== 200) {
         Swal.fire({
           icon: 'success',
           title: 'Project updated successfully!',
-          text: data_response.message,
+          text: response.message,
         });
         router.push('/dashboard/projects');
       }else{
         Swal.fire({
           icon: 'error',
           title: 'Project update failed',
-          text: data_response.message,
+          text: response.message,
         });
       }
     } catch (error) {
-      console.error('Error updating project:', error);
+      console.log('Error updating project:', error);
       Swal.fire({
         icon: 'error',
         title: 'Project creation failed',

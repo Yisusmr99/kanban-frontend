@@ -17,7 +17,7 @@ export const SortableItem = ({ id, children }: { id: string; children: React.Rea
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="p-2 m-2 bg-white rounded-md shadow-md">
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="p-6 m-2 bg-white rounded-md shadow-md">
       {children}
     </div>
   );

@@ -43,7 +43,6 @@ export default function ProjectsPage() {
       confirmButtonText: 'Yes, delete it!',
     });
     if(result.isConfirmed){
-      console.log('Deleting project:', projectId);
       try {
         await ApiService.deleteProject(projectId);
         Swal.fire('Deleted!', 'Your project has been deleted.', 'success');
@@ -54,7 +53,7 @@ export default function ProjectsPage() {
   };
 
   const handleViewBoard = (projectId: number) => {
-    router.push(`/dashboard/projects/${projectId}/board`);
+    router.push(`/dashboard/board/${projectId}`);
   };
 
   return (
@@ -104,7 +103,7 @@ export default function ProjectsPage() {
                     </>
                   )}
                   <button
-                    onClick={() => router.push(`/dashboard/board/${project.id}`)}
+                    onClick={() => handleViewBoard(project.id)}
                     className="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-500"
                   >
                     Go to Board

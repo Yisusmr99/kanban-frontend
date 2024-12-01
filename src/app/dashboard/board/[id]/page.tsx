@@ -1,15 +1,47 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import KanbanBoard from '@/components/KanbanBoard';
+import { ApiService } from '@/services/api';
+import { Project } from '@/types/project';
 
 export default function BoardPage() {
     const router = useRouter();
     const params = useParams(); // Obtener parámetros de la URL
-
     const projectId = params.id ? (Array.isArray(params.id) ? parseInt(params.id[0], 10) : parseInt(params.id, 10)) : null;
-    console.log(params.id);
+    const [project, setProject] = useState<Project>();
+    const [collaborators, setCollaborators] = useState([]);
+    
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+            if (projectId !== null) {
+                const data = await ApiService.getProject(projectId);
+                setProject(data);
+                setCollaborators(data.collaborators); // Actualizamos el estado de los colaboradores
+            }
+            } catch (error) {
+                console.log('Error fetching projects:', error);
+            }
+        };
+        
+        fetchProjects();
+    }, [projectId]);
+      
+    // Efecto para depurar los estados cuando cambian
+    useEffect(() => {
+    if (project) {
+        console.log(project, 'project actualizado');
+    }
+    }, [project]);
+    
+    useEffect(() => {
+    if (collaborators.length > 0) {
+        console.log(collaborators, 'collaborators actualizados');
+    }
+    }, [collaborators]);
 
     // Verificar si el ID del proyecto es válido
     if (!projectId) {
@@ -38,7 +70,7 @@ export default function BoardPage() {
                 </button>
             </div>
             {/* Renderiza el KanbanBoard */}
-            <KanbanBoard projectId={projectId} />
+            <KanbanBoard projectId={projectId} collaborators={collaborators}/>
         </div>
     );
 }
