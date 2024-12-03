@@ -181,7 +181,7 @@ const KanbanBoard = ({ projectId, collaborators }: { projectId: number; collabor
       <div className="grid grid-cols-3 gap-4 p-6">
         {columns.map((column) => (
           <Column key={column.id} id={column.id}>
-            <div className="bg-gray-100 p-4 rounded-lg shadow-md h-[40rem] flex flex-col">
+            <div className="bg-gray-100 p-4 rounded-lg shadow-md h-screem flex flex-col">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">{column.name}</h2>
                 {column.id === '1' && (
