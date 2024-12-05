@@ -1,6 +1,6 @@
 const nextConfig = {
   experimental: {
-    middlewareResponseBody: true, // Habilita características experimentales relacionadas con el middleware
+    // middlewareResponseBody: true, // Habilita características experimentales relacionadas con el middleware
   },
   async redirects() {
     return [

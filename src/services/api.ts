@@ -1,17 +1,15 @@
 import Swal from 'sweetalert2';
 
-const API_BASE_URL = 'http://localhost:3000';
+// const API_BASE_URL = 'http://52.6.119.126:3001';
+const API_BASE_URL = 'http://localhost:3003';
 
 function getCookie(name: string): string | null {
-  console.log('Document cookies:', document.cookie);
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
   if (parts.length === 2) {
     const cookie = parts.pop()?.split(';').shift();
-    console.log(`Cookie "${name}" found:`, cookie);
     return cookie || null;
   }
-  console.log(`Cookie "${name}" not found`);
   return null;
 }
 
@@ -21,14 +19,14 @@ async function apiRequest(endpoint: string, options: RequestInit) {
       ...options,
       credentials: 'include', // Incluye cookies
     });
-
-    if( response.status === 401) {
-      window.location.href = '/login';
-    }
     // Si la respuesta no es exitosa, lanza un error
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'An unknown error occurred');
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: (await response.json()).message || 'An unknown error occurred',
+      });
+      return;
     }
     return await response.json(); // Devuelve el resultado de la API
   } catch (error: any) {
@@ -38,8 +36,7 @@ async function apiRequest(endpoint: string, options: RequestInit) {
       title: 'Error',
       text: error.message || 'An unknown error occurred',
     });
-
-    throw error; // Relanza el error para que pueda manejarse en los componentes
+    return;
   }
 }
 
@@ -130,7 +127,6 @@ export const ApiService = {
         throw new Error('Unable to refresh token');
       }
     } catch (error) {
-      console.log('Error refreshing token:', error);
       return null; // Si falla, retorna null
     }
   },
@@ -174,5 +170,7 @@ export const ApiService = {
     headers: { 'Content-Type': 'application/json' },
     body: data,
   }),
+
+  getDashboard: () => apiRequest('/dashboard', { method: 'GET' }),
 
 };

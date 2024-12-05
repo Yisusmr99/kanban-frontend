@@ -9,7 +9,6 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
   const unwrappedParams = use(params); // Desempaqueta la promesa de `params`
   const [project, setProject] = useState<{ name: string; description: string; users: number[] } | null>(null);
   const router = useRouter();
-  console.log(unwrappedParams.id, 'los params');
 
   useEffect(() => {
     const fetchProject = async () => {

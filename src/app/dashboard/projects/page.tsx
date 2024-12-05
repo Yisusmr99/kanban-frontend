@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Project } from '@/types/project';
 import { ApiService } from '@/services/api';
 import Swal from 'sweetalert2';
+import Spinner from '@/components/Spinner';
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -56,8 +57,12 @@ export default function ProjectsPage() {
     router.push(`/dashboard/board/${projectId}`);
   };
 
+  if (loading) {
+    return <Spinner />;
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-white p-[2rem] rounded-lg">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-900">Your Projects</h1>
         <button

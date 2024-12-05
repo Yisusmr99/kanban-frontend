@@ -57,12 +57,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       router.push('/login'); // Redirige si no está autenticado
       return;
     }
-
     try {
       const parsedUser = JSON.parse(user);
       setUserName(parsedUser.username || ''); // Seteamos el nombre del usuario
     } catch (error) {
-      console.log('Error parsing user:', error);
       router.push('/login'); // Redirige al login si el JSON está corrupto
     }
   }, [router]);
@@ -324,8 +322,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </div>
 
-          <main className="py-10">
-            <div className="px-4 sm:px-6 lg:px-8">{ children }</div>
+          <main className="py-10 bg-gray-100 h-screem min-h-[48rem]">
+            <div className="px-4 sm:px-6 lg:px-8 ">{ children }</div>
           </main>
         </div>
       </div>

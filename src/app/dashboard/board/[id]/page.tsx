@@ -32,15 +32,15 @@ export default function BoardPage() {
       
     // Efecto para depurar los estados cuando cambian
     useEffect(() => {
-    if (project) {
-        console.log(project, 'project actualizado');
-    }
+        if (project) {
+            console.log(project, 'project actualizado');
+        }
     }, [project]);
     
     useEffect(() => {
-    if (collaborators.length > 0) {
-        console.log(collaborators, 'collaborators actualizados');
-    }
+        if (collaborators.length > 0) {
+            console.log(collaborators, 'collaborators actualizados');
+        }
     }, [collaborators]);
 
     // Verificar si el ID del proyecto es válido

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core';
+import { DndContext, closestCenter, DragOverlay, rectIntersection } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Column } from './Column';
 import { SortableItem } from './SortableItem';
@@ -107,33 +107,36 @@ const KanbanBoard = ({ projectId, collaborators }: { projectId: number; collabor
     if (!over || active.id === over.id) {
       return;
     }
-
-    // Encontrar las columnas de origen y destino
+  
     const sourceColumn = columns.find((col) =>
       col.tasks.some((task) => task.id === active.id)
     );
-    const targetColumn = columns.find((col) => col.id === over.id);
-
+    const targetColumn = columns.find((col) => col.id === over.id || col.tasks.some((task) => task.id === over.id));
+  
     if (!sourceColumn || !targetColumn) {
       return;
     }
-
-    // Encontrar la tarea activa
+  
     const activeTask = sourceColumn.tasks.find((task) => task.id === active.id);
-
+  
     if (!activeTask) {
       return;
     }
-
-    // Actualizar las tareas en las columnas de origen y destino
+  
+    // Obtener la posición exacta en la columna destino
+    const targetIndex = targetColumn.tasks.findIndex((task) => task.id === over.id);
+  
     const updatedSourceTasks = sourceColumn.tasks.filter((task) => task.id !== active.id);
-    const updatedTargetTasks = [...targetColumn.tasks, activeTask];
-
+    const updatedTargetTasks = [
+      ...targetColumn.tasks.slice(0, targetIndex),
+      activeTask,
+      ...targetColumn.tasks.slice(targetIndex),
+    ];
+  
     try {
-      // Actualizar en el backend
       const data = JSON.stringify({ columnId: parseInt(targetColumn.id) });
       await ApiService.updateStateTask(parseInt(active.id), data);
-      // Actualizar el estado local después de una respuesta exitosa
+  
       setColumns((prevColumns) =>
         prevColumns.map((col) => {
           if (col.id === sourceColumn.id) {
@@ -149,7 +152,7 @@ const KanbanBoard = ({ projectId, collaborators }: { projectId: number; collabor
       console.log('Error updating task:', error);
     }
   };
-  
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -166,7 +169,7 @@ const KanbanBoard = ({ projectId, collaborators }: { projectId: number; collabor
 
   return (
     <DndContext
-      collisionDetection={closestCenter}
+      collisionDetection={rectIntersection}
       onDragStart={({ active }) => {
         const task = columns
           .flatMap((col) => col.tasks)
@@ -181,7 +184,7 @@ const KanbanBoard = ({ projectId, collaborators }: { projectId: number; collabor
       <div className="grid grid-cols-3 gap-4 p-6">
         {columns.map((column) => (
           <Column key={column.id} id={column.id}>
-            <div className="bg-gray-100 p-4 rounded-lg shadow-md h-screem flex flex-col">
+            <div className="bg-gray-100 p-4 rounded-lg shadow-md min-h-[46rem] h-auto flex flex-col">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">{column.name}</h2>
                 {column.id === '1' && (

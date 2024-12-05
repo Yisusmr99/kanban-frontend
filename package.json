@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3002",
     "lint": "next lint"
   },
   "dependencies": {
@@ -17,8 +17,8 @@
     "jsonwebtoken": "^9.0.2",
     "next": "15.0.3",
     "next-client-cookies": "^2.0.0",
-    "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "sweetalert2": "^11.14.5"
   },
   "devDependencies": {
