@@ -12,17 +12,11 @@ import {
 } from '@headlessui/react'
 import {
   Bars3Icon,
-  BellIcon,
-  CalendarIcon,
-  ChartPieIcon,
-  Cog6ToothIcon,
-  DocumentDuplicateIcon,
   FolderIcon,
   HomeIcon,
-  UsersIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
-import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { usePathname, useRouter } from 'next/navigation';
 import { ApiService } from '@/services/api'
 
@@ -101,9 +95,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
                 <div className="flex h-16 shrink-0 items-center">
                   <img
-                    alt="Your Company"
-                    src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
-                    className="h-8 w-auto"
+                    alt="Ingenio La Unión"
+                    src="https://launion.com.gt/wp-content/uploads/2024/04/Vectores-actualizacion-pagina-web-zafra-53-04_020b006e0_6166@2x.jpg"
+                    className="h-12 w-auto"
                   />
                 </div>
                 <nav className="flex flex-1 flex-col">
@@ -136,48 +130,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         ))}
                       </ul>
                     </li>
-                    {/* <li>
-                      <div className="text-xs/6 font-semibold text-gray-400">Your teams</div>
-                      <ul role="list" className="-mx-2 mt-2 space-y-1">
-                        {teams.map((team) => (
-                          <li key={team.name}>
-                            <a
-                              href={team.href}
-                              className={classNames(
-                                team.current
-                                  ? 'bg-gray-50 text-indigo-600'
-                                  : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
-                                'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
-                              )}
-                            >
-                              <span
-                                className={classNames(
-                                  team.current
-                                    ? 'border-indigo-600 text-indigo-600'
-                                    : 'border-gray-200 text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600',
-                                  'flex size-6 shrink-0 items-center justify-center rounded-lg border bg-white text-[0.625rem] font-medium',
-                                )}
-                              >
-                                {team.initial}
-                              </span>
-                              <span className="truncate">{team.name}</span>
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </li> */}
-                    {/* <li className="mt-auto">
-                      <a
-                        href="#"
-                        className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
-                      >
-                        <Cog6ToothIcon
-                          aria-hidden="true"
-                          className="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
-                        />
-                        Settings
-                      </a>
-                    </li> */}
                   </ul>
                 </nav>
               </div>
@@ -191,9 +143,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
               <img
-                alt="Your Company"
-                src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
-                className="h-8 w-auto"
+                alt="Ingenio La Unión"
+                src="https://launion.com.gt/wp-content/uploads/2024/04/Vectores-actualizacion-pagina-web-zafra-53-04_020b006e0_6166@2x.jpg"
+                className="h-12 w-auto"
               />
             </div>
             <nav className="flex flex-1 flex-col">

@@ -41,9 +41,9 @@ export default function RegisterPage() {
       <div className="flex flex-col justify-center w-full px-6 py-12 lg:w-1/2">
         <div className="mx-auto w-full max-w-sm">
           <img
-            alt="Your Company"
-            src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
-            className="h-10 w-auto"
+            alt="Ingenio La Unión"
+            src="https://launion.com.gt/wp-content/uploads/2024/04/Vectores-actualizacion-pagina-web-zafra-53-04_020b006e0_6166@2x.jpg"
+            className="h-auto w-auto"
           />
           <h2 className="mt-8 text-2xl font-bold tracking-tight text-gray-900">
             Create your account

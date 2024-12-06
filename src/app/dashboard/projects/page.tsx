@@ -62,24 +62,24 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="space-y-6 bg-white p-[2rem] rounded-lg">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-gray-900">Your Projects</h1>
+    <div className="space-y-6 bg-white p-4 sm:p-6 md:p-8 rounded-lg">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 text-center sm:text-left">Your Projects</h1>
         <button
           onClick={handleCreateProject}
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto"
         >
           Add New Project
         </button>
       </div>
 
       {loading ? (
-        <p>Loading projects...</p>
+        <p className="text-center">Loading projects...</p>
       ) : projects.length > 0 ? (
         <ul className="divide-y divide-gray-200 rounded-md border border-gray-200">
           {projects.map((project) => (
             <li key={project.id} className="p-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">{project.name}</h2>
                   <p className="text-sm text-gray-500">{project.description}</p>
@@ -90,7 +90,7 @@ export default function ProjectsPage() {
                     Collaborators: <span className="font-medium text-gray-700">{project.collaborators.length}</span>
                   </p>
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex flex-wrap gap-2">
                   {project.role === 'owner' && (
                     <>
                       <button
@@ -119,7 +119,7 @@ export default function ProjectsPage() {
           ))}
         </ul>
       ) : (
-        <p>No projects found. Start by creating a new one!</p>
+        <p className="text-center">No projects found. Start by creating a new one!</p>
       )}
     </div>
   );

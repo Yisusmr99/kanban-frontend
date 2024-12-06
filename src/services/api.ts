@@ -1,7 +1,7 @@
 import Swal from 'sweetalert2';
 
-// const API_BASE_URL = 'http://52.6.119.126:3001';
-const API_BASE_URL = 'http://localhost:3003';
+const API_BASE_URL = 'http://54.83.184.248:3005';
+// const API_BASE_URL = 'http://localhost:3003';
 
 function getCookie(name: string): string | null {
   const value = `; ${document.cookie}`;
@@ -26,6 +26,9 @@ async function apiRequest(endpoint: string, options: RequestInit) {
         title: 'Error',
         text: (await response.json()).message || 'An unknown error occurred',
       });
+      if (response.status === 401) {
+        window.location.href = '/login';
+      }
       return;
     }
     return await response.json(); // Devuelve el resultado de la API

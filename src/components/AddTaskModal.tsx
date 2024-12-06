@@ -17,8 +17,12 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ projectId, columnId, collab
   const [isLoading, setIsLoading] = useState(false);
 
   const handleAddTask = async () => {
-    if (!title.trim()) {
-      alert('Task title is required.');
+    if (!title.trim() || !responsibleId) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: 'Title and responsible are required.',
+      });
       return;
     }
 

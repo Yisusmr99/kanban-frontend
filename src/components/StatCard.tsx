@@ -15,7 +15,7 @@ const StatCard: React.FC<StatCardProps> = ({ icon: Icon, title, count }) => {
 
     <div className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 shadow sm:px-6 sm:pt-6">
       <dt>
-        <div className="absolute rounded-md bg-indigo-500 p-3">
+        <div className="absolute rounded-md bg-indigo-600 p-3">
           <Icon className="h-6 w-6 text-white" />
         </div>
         <p className="ml-16 truncate text-sm font-medium text-gray-500">{title}</p>

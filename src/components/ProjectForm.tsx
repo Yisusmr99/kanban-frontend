@@ -34,7 +34,8 @@ export default function ProjectForm({ initialData, onSubmit, onBack }: ProjectFo
     const fetchUsers = async () => {
       try {
         const data = await ApiService.getUsers();
-        setAllUsers(data.data.filter((user: any) => user.id !== currentUserId));
+        setAllUsers(data.data);
+        // setAllUsers(data.data.filter((user: any) => user.id !== currentUserId));
       } catch (error) {
         console.log('Error fetching users:', error);
       }
@@ -114,7 +115,7 @@ export default function ProjectForm({ initialData, onSubmit, onBack }: ProjectFo
           <div className="flex justify-end">
             <button
               type="submit"
-              className="py-2 px-4 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="py-2 px-4 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               {initialData ? 'Update Project' : 'Create Project'}
             </button>

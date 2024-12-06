@@ -37,6 +37,7 @@ const KanbanBoard = ({ projectId, collaborators }: { projectId: number; collabor
     { id: '1', name: 'To Do', tasks: [] },
     { id: '2', name: 'In Progress', tasks: [] },
     { id: '3', name: 'Done', tasks: [] },
+    // { id: '4', name: 'Review', tasks: [] },
   ]);
 
   const [loading, setLoading] = useState(true);
@@ -181,63 +182,65 @@ const KanbanBoard = ({ projectId, collaborators }: { projectId: number; collabor
         handleDragEnd(event);
       }}
     >
-      <div className="grid grid-cols-3 gap-4 p-6">
-        {columns.map((column) => (
-          <Column key={column.id} id={column.id}>
-            <div className="bg-gray-100 p-4 rounded-lg shadow-md min-h-[46rem] h-auto flex flex-col">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold">{column.name}</h2>
-                {column.id === '1' && (
-                  <button
-                    onClick={() => handleAddTask(column.id)}
-                    className="px-3 py-1 bg-blue-500 text-white text-sm rounded-md shadow hover:bg-blue-400"
-                  >
-                    + Add Task
-                  </button>
-                )}
-              </div>
-              <SortableContext
-                items={column.tasks.map((task) => task.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {column.tasks.map((task) => (
-                  <div key={task.id} className="relative">
-                    <SortableItem id={task.id}>
-                      <div className="font-medium text-gray-800">{task.title}</div>
-                      <div className="text-sm text-gray-500">
-                        Created: {formatDate(task.created_at)}
-                      </div>
-                      {task.responsible && (
+      <div className="overflow-x-auto p-6">
+        <div className="flex gap-4 min-w-[800px]">
+          {columns.map((column) => (
+            <Column key={column.id} id={column.id}>
+              <div className="bg-gray-100 p-4 rounded-lg shadow-md min-h-[46rem] h-auto flex flex-col w-[300px]">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-semibold">{column.name}</h2>
+                  {column.id === '1' && (
+                    <button
+                      onClick={() => handleAddTask(column.id)}
+                      className="px-3 py-1 bg-blue-500 text-white text-sm rounded-md shadow hover:bg-blue-400"
+                    >
+                      + Add Task
+                    </button>
+                  )}
+                </div>
+                <SortableContext
+                  items={column.tasks.map((task) => task.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {column.tasks.map((task) => (
+                    <div key={task.id} className="relative">
+                      <SortableItem id={task.id}>
+                        <div className="font-medium text-gray-800">{task.title}</div>
                         <div className="text-sm text-gray-500">
-                          Assigned to: <span className="font-medium">{task.responsible.full_name}</span>
+                          Created: {formatDate(task.created_at)}
                         </div>
-                      )}
-                    </SortableItem>
-                    <div className="absolute top-2 right-2">
-                      <button
-                        onClick={() => setSelectedTask(task)}
-                        className="px-2 py-1 bg-blue-500 text-white text-xs rounded shadow hover:bg-blue-400"
-                      >
-                        Details
-                      </button>
+                        {task.responsible && (
+                          <div className="text-sm text-gray-500">
+                            Assigned to: <span className="font-medium">{task.responsible.full_name}</span>
+                          </div>
+                        )}
+                      </SortableItem>
+                      <div className="absolute top-2 right-2">
+                        <button
+                          onClick={() => setSelectedTask(task)}
+                          className="px-2 py-1 bg-blue-500 text-white text-xs rounded shadow hover:bg-blue-400"
+                        >
+                          Details
+                        </button>
+                      </div>
+                      <div className="absolute bottom-2 right-2">
+                        <button
+                          onClick={() => {
+                            handleEditTask(column.id);
+                            setSelectedTaskEdit(task);
+                          }}
+                          className="px-2 py-1 bg-green-500 text-white text-xs rounded shadow hover:bg-green-400"
+                        >
+                          Edit
+                        </button>
+                      </div>
                     </div>
-                    <div className="absolute bottom-2 right-2">
-                      <button
-                        onClick={() => {
-                          handleEditTask(column.id);
-                          setSelectedTaskEdit(task);
-                        }}
-                        className="px-2 py-1 bg-green-500 text-white text-xs rounded shadow hover:bg-green-400"
-                      >
-                        Edit
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </SortableContext>
-            </div>
-          </Column>
-        ))}
+                  ))}
+                </SortableContext>
+              </div>
+            </Column>
+          ))}
+        </div>
       </div>
       <DragOverlay>
         {activeTask && <div className="p-3 bg-white rounded-md shadow">{activeTask.title}</div>}
@@ -251,19 +254,17 @@ const KanbanBoard = ({ projectId, collaborators }: { projectId: number; collabor
           onTaskAdded={handleTaskAdded}
         />
       )}
-      {selectedTask &&(
+      {selectedTask && (
         <TaskDetailsModal task={selectedTask} onClose={() => setSelectedTask(null)} />
       )}
-      {
-        showEditTaskModal && selectedColumnId && selectedTaskEdit && (
-          <EditTaskModal
-            onClose={() => setShowEditTaskModal(false)}
-            onTaskUpdated={handleTaskUpdated}
-            task={selectedTaskEdit}
-            collaborators={collaborators}
-          />
-        )
-      }
+      {showEditTaskModal && selectedColumnId && selectedTaskEdit && (
+        <EditTaskModal
+          onClose={() => setShowEditTaskModal(false)}
+          onTaskUpdated={handleTaskUpdated}
+          task={selectedTaskEdit}
+          collaborators={collaborators}
+        />
+      )}
     </DndContext>
   );
 };

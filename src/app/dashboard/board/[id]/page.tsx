@@ -59,18 +59,19 @@ export default function BoardPage() {
     }
 
     return (
-        <div className="p-4">
-            <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-semibold text-gray-800">Kanban Board</h1>
+        <div className="p-4 sm:p-6 lg:p-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <h1 className="text-xl sm:text-2xl font-semibold text-gray-800 text-center sm:text-left">
+                    Kanban Board
+                </h1>
                 <button
-                onClick={() => router.push('/dashboard/projects')}
-                className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+                    onClick={() => router.push('/dashboard/projects')}
+                    className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 w-full sm:w-auto"
                 >
-                Back to Dashboard
+                    Back to Dashboard
                 </button>
             </div>
-            {/* Renderiza el KanbanBoard */}
-            <KanbanBoard projectId={projectId} collaborators={collaborators}/>
+            <KanbanBoard projectId={projectId} collaborators={collaborators} />
         </div>
     );
 }
