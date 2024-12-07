@@ -36,8 +36,8 @@ const KanbanBoard = ({ projectId, collaborators }: { projectId: number; collabor
   const [columns, setColumns] = useState<Column[]>([
     { id: '1', name: 'To Do', tasks: [] },
     { id: '2', name: 'In Progress', tasks: [] },
-    { id: '3', name: 'Done', tasks: [] },
-    // { id: '4', name: 'Review', tasks: [] },
+    { id: '3', name: 'In Review', tasks: [] },
+    { id: '4', name: 'Done', tasks: [] },
   ]);
 
   const [loading, setLoading] = useState(true);

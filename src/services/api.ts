@@ -1,7 +1,6 @@
 import Swal from 'sweetalert2';
 
-const API_BASE_URL = 'http://54.83.184.248:3001';
-// const API_BASE_URL = 'http://localhost:3003';
+const API_BASE_URL = process.env.NEXT_PUBLIC_IS_DEV  === '1' ? process.env.NEXT_PUBLIC_API_URL_DEV : process.env.NEXT_PUBLIC_API_URL;
 
 function getCookie(name: string): string | null {
   const value = `; ${document.cookie}`;

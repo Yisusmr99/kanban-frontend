@@ -1,6 +1,6 @@
 'use client';
 import { ApiService } from '@/services/api';
-import { UsersIcon, CommandLineIcon, ClipboardDocumentCheckIcon, ChevronDownIcon, ChevronUpIcon, UserGroupIcon, CheckCircleIcon, PencilSquareIcon, ClipboardIcon, UserIcon, ChartBarIcon, ChartPieIcon } from '@heroicons/react/24/outline';
+import { UsersIcon, CommandLineIcon, ClipboardDocumentCheckIcon, ChevronDownIcon, ChevronUpIcon, UserGroupIcon, CheckCircleIcon, PencilSquareIcon, ClipboardIcon, UserIcon, ChartBarIcon, ChartPieIcon, ClockIcon } from '@heroicons/react/24/outline';
 import React, { useState, useEffect } from 'react';
 import { DataProject } from '@/types/project';
 import IndicatorCard from '@/components/IndicatorCard';
@@ -156,6 +156,12 @@ export default function DashboardPage() {
                         title={'Tasks to do'}
                         count={project.count_tasks_todo}
                         bg='bg-[#94a3b8]'
+                      />
+                      <IndicatorCard
+                        icon={ClockIcon}
+                        title={'Tasks in review'}
+                        count={project.count_tasks_review}
+                        bg='bg-[#eab308]'
                       />
                       <IndicatorCard
                         icon={PencilSquareIcon}

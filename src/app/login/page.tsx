@@ -1,12 +1,18 @@
 'use client'; // Necesario para manejar eventos en el cliente
 import { ApiService } from '@/services/api';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation'; // Importar useRouter
 import { split } from 'postcss/lib/list';
-import React from 'react';
+import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 
 export default function LoginPage() {
   const router = useRouter(); // Instancia de useRouter
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -81,15 +87,26 @@ export default function LoginPage() {
               >
                 Password
               </label>
-              <div className="mt-2">
+              <div className="mt-2 relative">
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   autoComplete="current-password"
                   className="block w-full rounded-md border py-2 px-3 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 focus:outline-none"
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className="h-5 w-5" aria-hidden="true" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5" aria-hidden="true" />
+                  )}
+                </button>
               </div>
             </div>
 

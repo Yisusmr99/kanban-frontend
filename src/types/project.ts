@@ -39,6 +39,7 @@ export type SumarryProject = {
   total_tasks: number,
   count_tasks_todo: number,
   count_tasks_inprogress: number,
+  count_tasks_review: number,
   count_tasks_done: number,
   porcentage_tasks: number,
   tasks_by_responsible: TaskByResponsible[]
